@@ -60,7 +60,7 @@ search_gifs = db.Table('search_gifs', db.Column('search_id', db.Integer, db.Fore
 
 
 # TODO 364: Set up association Table between GIFs and collections prepared by user (you can call it anything you want. We suggest: user_collection)
-user_collection = db.Table('user_collection', db.Column('user_id', db.Integer, db.ForeignKey('gifs.id')), db.Column('collection_id', db.Integer, db.ForeignKey('personalGifCollection.id')))
+user_collection = db.Table('user_collection', db.Column('user_id', db.Integer, db.ForeignKey('gifs.id')), db.Column('collection_id', db.Integer, db.ForeignKey('PersonalGifCollection.id')))
 
 
 ## User-related Models
@@ -115,7 +115,7 @@ class Gif(db.Model):
 
 # Model to store a personal gif collection
 class PersonalGifCollection(db.Model):
-	__tablename__ = 'personalGifCollection'
+	__tablename__ = 'PersonalGifCollection'
     # TODO 364: Add code for the PersonalGifCollection model such that it has the following fields:
     # id (Integer, primary key)
     # name (String, up to 255 characters)
@@ -126,7 +126,7 @@ class PersonalGifCollection(db.Model):
 	user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # This model should also have a many to many relationship with the Gif model (one gif might be in many personal collections, one personal collection could have many gifs in it).)
-	gifs = db.relationship('Gif', secondary=user_collection, backref=db.backref('personalGifCollection', lazy='dynamic'), lazy='dynamic')
+	gifs = db.relationship('Gif', secondary=user_collection, backref=db.backref('PersonalGifCollection', lazy='dynamic'), lazy='dynamic')
 
 	def __repr__(self):
 		return "{}, URL: {}".format(self.title, self.embedURL)
@@ -308,6 +308,7 @@ def logout():
     flash('You have been logged out')
     return redirect(url_for('index'))
 
+
 @app.route('/register',methods=["GET","POST"])
 def register():
     form = RegistrationForm()
@@ -324,6 +325,7 @@ def register():
 def secret():
     return "Only authenticated users can do this! Try to log in or contact the site admin."
 
+
 ## Other routes
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -338,12 +340,14 @@ def index():
         return redirect(url_for('search_results', search_term=form.search.data))
     return render_template('index.html',form=form)
 
+
 # Provided
 @app.route('/gifs_searched/<search_term>')
 def search_results(search_term):
     term = SearchTerm.query.filter_by(term=search_term).first()
     relevant_gifs = term.gifs.all()
     return render_template('searched_gifs.html',gifs=relevant_gifs,term=term)
+
 
 @app.route('/search_terms')
 def search_terms():
@@ -361,6 +365,7 @@ def all_gifs():
     gifs = Gif.query.all()
     return render_template('all_gifs.html',all_gifs=gifs)
 
+
 @app.route('/create_collection',methods=["GET","POST"])
 @login_required
 def create_collection():
@@ -376,6 +381,7 @@ def create_collection():
         get_or_create_collection(name=form.name.data, current_user=current_user, gif_list=gif_obj)
         return redirect(url_for('collections'))
     return render_template('create_collection.html', form=form)
+
 
 @app.route('/collections',methods=["GET","POST"])
 @login_required
