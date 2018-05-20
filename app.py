@@ -128,9 +128,7 @@ class PersonalGifCollection(db.Model):
     # This model should also have a many to many relationship with the Gif model (one gif might be in many personal collections, one personal collection could have many gifs in it).)
 	gifs = db.relationship('Gif', secondary=user_collection, backref=db.backref('PersonalGifCollection', lazy='dynamic'), lazy='dynamic')
 
-	def __repr__(self):
-		return "{}, URL: {}".format(self.title, self.embedURL)
-
+	
 class SearchTerm(db.Model):
     __tablename__ = 'search'
     # TODO 364: Add code for the SearchTerm model such that it has the following fields:
